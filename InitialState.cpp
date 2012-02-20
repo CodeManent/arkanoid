@@ -1,7 +1,6 @@
 #include "InitialState.h"
 #include <cstdlib>
-#include <windows.h>
-#include <gl/gl.h>
+#include <gl/glut.h>
 
 InitialState::InitialState(void)
 	:State()

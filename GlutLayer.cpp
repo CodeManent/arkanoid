@@ -1,8 +1,7 @@
 #include "GlutLayer.h"
 #include "UI.h"
 
-#include <cstdlib>
-#include <windows.h>
+#include <windows.h> //for sleep
 #include <GL/glut.h>
 #include <stdexcept>
 
