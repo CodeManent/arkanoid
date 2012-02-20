@@ -171,7 +171,27 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\GlutLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\InitialState.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\State.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\StateManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UI.cpp"
 				>
 			</File>
 		</Filter>
@@ -180,6 +200,34 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\GlutLayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\InitialState.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Input.h"
+				>
+			</File>
+			<File
+				RelativePath=".\point3.h"
+				>
+			</File>
+			<File
+				RelativePath=".\State.h"
+				>
+			</File>
+			<File
+				RelativePath=".\StateManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UI.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
