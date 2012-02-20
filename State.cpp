@@ -16,3 +16,8 @@ State::State(void)
 State::~State(void)
 {
 }
+
+std::auto_ptr<State> State::getNextState()
+{
+	return std::auto_ptr<State>(NULL);
+}
