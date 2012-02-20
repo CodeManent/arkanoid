@@ -242,7 +242,27 @@
 				Name="Headers"
 				>
 				<File
+					RelativePath=".\Arkanoid\Actor.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Arkanoid\Arkanoid.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Arkanoid\Ball.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Arkanoid\Brick.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Arkanoid\Racket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Arkanoid\Wall.h"
 					>
 				</File>
 			</Filter>
@@ -250,7 +270,27 @@
 				Name="Sources"
 				>
 				<File
+					RelativePath=".\Arkanoid\Actor.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Arkanoid\Arkanoid.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Arkanoid\Ball.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Arkanoid\Brick.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Arkanoid\Racket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Arkanoid\Wall.cpp"
 					>
 				</File>
 			</Filter>

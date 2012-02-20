@@ -4,7 +4,7 @@ namespace Arkanoid{
 
 	Arkanoid::Arkanoid(void)
 	{
-		this->finished = false;
+
 	}
 
 	Arkanoid::~Arkanoid(void)
