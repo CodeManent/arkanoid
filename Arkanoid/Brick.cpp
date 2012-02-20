@@ -6,7 +6,7 @@ namespace Arkanoid{
 	{
 	}
 
-	void Brick::draw()
+	void Brick::draw() const
 	{
 		this->Actor::draw();
 	}

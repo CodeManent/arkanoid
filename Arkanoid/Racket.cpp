@@ -6,7 +6,7 @@ namespace Arkanoid{
 	{
 	}
 
-	void Racket::draw()
+	void Racket::draw() const
 	{
 		(*this).Actor::draw();
 

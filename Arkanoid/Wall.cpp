@@ -11,7 +11,8 @@ namespace Arkanoid{
 	{
 	}
 
-	void Wall::draw(){
+	void Wall::draw() const
+	{
 		this->Actor::draw();
 	}
 
