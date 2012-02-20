@@ -21,6 +21,9 @@ namespace Arkanoid{
 
 	void Arkanoid::input(const Input &input)
 	{
+		if(input == Start){
+			finished = true;
+		}
 	}
 
 	bool Arkanoid::isActive(){

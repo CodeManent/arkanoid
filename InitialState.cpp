@@ -2,9 +2,12 @@
 #include <cstdlib>
 #include <gl/glut.h>
 
+#include "Arkanoid/Arkanoid.h"
+
 InitialState::InitialState(void)
 	:State()
 {
+	finished = true;
 }
 
 
@@ -47,9 +50,11 @@ void InitialState::draw()
 
 void InitialState::input(const Input &input)
 {
+	/*
 	if(input == Start){
 		finished = true;
 	}
+	*/
 }
 
 
@@ -76,5 +81,6 @@ bool InitialState::isFinished()
 
 std::auto_ptr<State> InitialState::getNextState()
 {
-	return std::auto_ptr<State>(NULL);
+	//return std::auto_ptr<State>(NULL);
+	return std::auto_ptr<State>(new Arkanoid::Arkanoid());
 }
