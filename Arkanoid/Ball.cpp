@@ -1,17 +1,22 @@
 #include "Ball.h"
 #include <cstdlib>
 #include <gl/glut.h>
+#include <iostream>
 
 namespace Arkanoid{
+	const float Ball::maxSpeed = 0.0007;
+
 	Ball::Ball(const point3f &position, const float &radious)
-		:Actor(position, point3f(radious, radious, 0), point3f(0.37f, 0.89f, 0.75f)), radious(radious)
+		:Actor(position, point3f(radious, radious, 0), point3f(0.37f, 0.89f, 0.75f)),
+		radious(radious),
+		speed(point3f(1.0f, -1.5f).normalise()*maxSpeed)
 	{
 	}
 
 	//assumes that ball is round and all the other actors are square
+	//http://hq.scene.ro/blog/read/circle-box-intersection-revised/
 	bool Ball::collidesWith(const Actor &actor) const
 	{
-		//http://hq.scene.ro/blog/read/circle-box-intersection-revised/
 		const point3f& boxPosition = actor.getPosition();
 		const point3f& boxSize = actor.getSize();
 
@@ -50,7 +55,7 @@ namespace Arkanoid{
 				break;
 			}
 
-				//inside zone, collision for sure
+			//inside zone, collision for sure
 			case 4:
 			{
 				collisionDetected = true;
@@ -74,6 +79,68 @@ namespace Arkanoid{
 			}
 		}
 		return collisionDetected;
+	}
+
+	void Ball::adjustSpeed(const Actor &actor)
+	{
+		const point3f& boxPosition = actor.getPosition();
+		const point3f& boxSize = actor.getSize();
+
+		const int xZone = position.x  < (boxPosition.x - boxSize.x/2) ? 0 : 
+						(position.x > (boxPosition.x + boxSize.x/2) ? 2 : 1);
+
+		const int yZone = position.y < (boxPosition.y - boxSize.y/2) ? 0 :
+						(position.y > (boxPosition.y + boxSize.y/2) ? 2 : 1);
+
+		const int zone = xZone + 3*yZone;
+
+		switch(zone)
+		{
+		case 0:
+			speed.x = -fabs(speed.x);
+			speed.y = -fabs(speed.y);
+			break;
+
+		case 1:
+		case 7:
+			speed.y = -speed.y;
+			break;
+
+		case 2:
+			speed.x = fabs(speed.x);
+			speed.y = -fabs(speed.y);
+			break;
+
+		case 3:
+		case 5:
+			speed.x = -speed.x;
+			break;
+
+		case 4:
+			//inside the brick!!!!!
+			break;
+
+		case 6:
+			speed.x = -fabs(speed.x);
+			speed.y = fabs(speed.y);
+			break;
+
+		case 8:
+			speed.x = fabs(speed.x);
+			speed.y = fabs(speed.x);
+		}
+	}
+
+	void Ball::racketCollision(const Actor &actor)
+	{
+		point3f direction = position - actor.getPosition();
+		direction.y = -fabs(direction.y)*2;
+		direction.normalise();
+
+		speed.y = -fabs(speed.y);
+		speed += direction;
+		speed.normalise();
+		speed *= maxSpeed;
 	}
 
 	void Ball::draw() const
@@ -112,5 +179,25 @@ namespace Arkanoid{
 			x = c * x - s * y;
 			y = s * t + c * y;
 		} 
+	}
+
+	void Ball::step()
+	{
+		position += speed;
+
+		if(position.x + radious >= 1.0f){
+			position.x = 1.0f - radious;
+			speed.x = -speed.x;
+		}
+		
+		if(position.x - radious <= 0){
+			position.x = radious;
+			speed.x = -speed.x;
+		}
+
+		if(position.y - radious <= 0){
+			position.y = radious;
+			speed.y = -speed.y;
+		}
 	}
 }

@@ -22,7 +22,9 @@ UI::UI(int &argc, char *argv[], StateManager &manager)
 	glutReshapeFunc(::reshape);
 	glutDisplayFunc(::display);
 	glutKeyboardFunc(::keyboard);
+	glutKeyboardUpFunc(::keyboardUp);
 	glutSpecialFunc(::special);
+	glutSpecialUpFunc(::specialUp);
 	glutIdleFunc(::idle);
 }
 
@@ -48,20 +50,23 @@ void UI::display(){
 //---------------------------------------------------------
 
 
-void UI::keyboard(int key, const point3i &pos)
+void UI::keyboard(int key, const point3i &pos, Input::Value::ButtonValue buttonValue)
 {
 	Input input;
 
 	switch(key){
-		case 13:			input = Start;	break;
-		case GLUT_KEY_UP:	input = Up;		break;
-		case GLUT_KEY_DOWN:	input = Down;	break;
-		case GLUT_KEY_LEFT:	input = Left;	break;
-		case GLUT_KEY_RIGHT:input = Right;	break;
+		case 27:/*Esc*/		input.type = Input::Back;	break;
+		case 13:/*Enter*/	input.type = Input::Start;	break;
+		case GLUT_KEY_UP:	input.type = Input::Up;		break;
+		case GLUT_KEY_DOWN:	input.type = Input::Down;	break;
+		case GLUT_KEY_LEFT:	input.type = Input::Left;	break;
+		case GLUT_KEY_RIGHT:input.type = Input::Right;	break;
 			//todo: add more input
 		default:
 			return;
 	}
+	input.value.buttonValue = buttonValue;
+
 	manager.forwardInput(input);
 }
 

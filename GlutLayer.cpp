@@ -1,7 +1,6 @@
 #include "GlutLayer.h"
 #include "UI.h"
 
-#include <windows.h> //for sleep
 #include <GL/glut.h>
 #include <stdexcept>
 
@@ -44,7 +43,18 @@ void display(void){
 void keyboard(unsigned char key, int x, int y)
 {
 	if(ui){
-		ui->keyboard(key, point3i(x, y));
+		ui->keyboard(key, point3i(x, y), Input::Value::ButtonDown);
+	}
+}
+
+
+//---------------------------------------------------------
+
+
+void keyboardUp(unsigned char key, int x, int y)
+{
+	if(ui){
+		ui->keyboard(key, point3i(x, y), Input::Value::ButtonUp);
 	}
 }
 
@@ -55,7 +65,18 @@ void keyboard(unsigned char key, int x, int y)
 void special(int key, int x, int y)
 {
 	if(ui){
-		ui->keyboard(key, point3i(x, y));
+		ui->keyboard(key, point3i(x, y), Input::Value::ButtonDown);
+	}
+}
+
+
+//---------------------------------------------------------
+
+
+void specialUp(int key, int x, int y)
+{
+	if(ui){
+		ui->keyboard(key, point3i(x, y), Input::Value::ButtonUp);
 	}
 }
 
@@ -79,5 +100,4 @@ void idle(void)
 	if(ui){
 		ui->idle();
 	}
-	Sleep(1);
 }
