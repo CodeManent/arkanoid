@@ -2,8 +2,8 @@
 
 
 namespace Arkanoid{
-	const float Racket::acceleration = 0.0002f;
-	const float Racket::maxSpeed = 0.002f;
+	const float Racket::acceleration = 0.002f;
+	const float Racket::maxSpeed = 0.02f;
 	const point3f Racket::racketColor(0.974f, 0.157f, 0.214f);
 
 	Racket::Racket(const point2f &position, const point2f &size)
