@@ -44,8 +44,10 @@ void StateManager::draw()
 //---------------------------------------------------------
 
 
-void StateManager::step()
+bool StateManager::step()
 {
+	bool redraw = false;
+
 	//remove finished states
 	while(!stateStack.empty() && stateStack.back()->isFinished()){
 		//get next possible state
@@ -72,12 +74,14 @@ void StateManager::step()
 	std::vector<State*>::iterator state;
 	for(state = stateStack.begin(); state != stateStack.end() -1; ++state){
 		if((*state)->isActive()){
-			(*state)->step();
+			redraw |= (*state)->step();
 		}
 	}
 
 	//animate current state
-	stateStack.back()->step();
+	 redraw |= stateStack.back()->step();
+
+	 return redraw;
 }
 
 

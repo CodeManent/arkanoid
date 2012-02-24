@@ -8,7 +8,7 @@ public:
 	State(void);
 	virtual ~State(void);
 
-	virtual void step() = 0;
+	virtual bool step() = 0;
 	virtual void draw() = 0;
 	virtual void input(const Input &input) = 0;
 	virtual bool isActive() = 0;

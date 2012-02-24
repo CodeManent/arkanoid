@@ -12,7 +12,7 @@ public:
 	~StateManager(void);
 
 	void draw();
-	void step();
+	bool step(); //true to update the display
 	void forwardInput(const Input &i);
 	void pushState(std::auto_ptr<State> state);
 

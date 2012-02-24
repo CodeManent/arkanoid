@@ -22,8 +22,9 @@ InitialState::~InitialState(void)
 //---------------------------------------------------------
 
 
-void InitialState::step()
+bool InitialState::step()
 {
+	return true;
 }
 
 

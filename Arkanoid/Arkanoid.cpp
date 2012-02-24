@@ -2,10 +2,8 @@
 #include <algorithm>
 #include <functional>
 
-#include <windows.h>
 #include <cstdlib>
 #include <gl/glut.h>
-#include <iostream>
 
 namespace Arkanoid{
 
@@ -56,7 +54,7 @@ namespace Arkanoid{
 		for_each(bricks.begin(), bricks.end(), mem_fun(&Actor::suicide));
 	}
 
-	void Arkanoid::step()
+	bool Arkanoid::step()
 	{
 		//move racket
 		racket->step();
@@ -83,19 +81,7 @@ namespace Arkanoid{
 			}
 		}
 */
-
-		glutPostRedisplay();
-
-		static DWORD startTime = GetTickCount();
-		static unsigned int frames = 0;
-		++frames;
-		const DWORD currentTime = GetTickCount();
-		if(currentTime - startTime >= 1000){
-			std::cout << frames << " fps" << std::endl;
-			startTime = currentTime;
-			frames = 0;
-		}
-
+		return true;//redraw
 	}
 
 	void Arkanoid::draw()

@@ -16,7 +16,7 @@ namespace Arkanoid{
 		Arkanoid(void);
 		virtual ~Arkanoid(void);
 
-		virtual void step();
+		virtual bool step();
 		virtual void draw();
 		virtual void input(const Input &input);
 		virtual bool isActive();

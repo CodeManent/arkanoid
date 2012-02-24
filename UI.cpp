@@ -2,6 +2,7 @@
 #include "GlutLayer.h"
 #include "Input.h"
 
+#include <windows.h>// DWORD, GetTickCount, Sleep
 #include <iostream>
 #include <cstdlib>
 #include <gl/glut.h>
@@ -10,12 +11,14 @@
 
 
 UI::UI(int &argc, char *argv[], StateManager &manager)
-	:manager(manager)
+	:manager(manager),
+	windowSize(800, 600),
+	showFps(true)
 {
 	registerUI(*this);
 
 	glutInit(&argc, argv);
-	glutInitWindowSize(800, 600);
+	glutInitWindowSize(windowSize.x, windowSize.y);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
 	glutCreateWindow("The Game");
@@ -43,18 +46,35 @@ UI::~UI(void)
 
 
 void UI::display(){
+
 	manager.draw();
-	GLenum err;
-	unsigned int errCount = 0;
 
-	while((err = glGetError()) != GL_NO_ERROR){
-		std::cout << "GL error: " << gluErrorString(err) << std::endl;
-		if(++errCount > 100){
-			std::cout << "Too many GL Errors" << std::endl;
-			exit(EXIT_FAILURE);
+	if(showFps)
+	{
+		static DWORD startTime = GetTickCount();
+		static unsigned int frames = 0;
+		++frames;
+		const DWORD currentTime = GetTickCount();
+		if(currentTime - startTime >= 1000){
+			std::cout << frames << " fps" << std::endl;
+			startTime = currentTime;
+			frames = 0;
 		}
-
 	}
+
+	{
+		GLenum err;
+		unsigned int errCount = 0;
+
+		while((err = glGetError()) != GL_NO_ERROR){
+			std::cout << "GL error: " << gluErrorString(err) << std::endl;
+			if(++errCount > 100){
+				std::cout << "Too many GL Errors" << std::endl;
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+
 	glutSwapBuffers();
 }
 
@@ -62,7 +82,7 @@ void UI::display(){
 //---------------------------------------------------------
 
 
-void UI::keyboard(int key, const point3i &pos, Input::Value::ButtonValue buttonValue)
+void UI::keyboard(int key, const point2i &pos, Input::Value::ButtonValue buttonValue)
 {
 	Input input;
 
@@ -86,7 +106,7 @@ void UI::keyboard(int key, const point3i &pos, Input::Value::ButtonValue buttonV
 //---------------------------------------------------------
 
 
-void UI::reshape(const point3i &size)
+void UI::reshape(const point2i &size)
 {
 	windowSize = size;
 
@@ -105,7 +125,14 @@ void UI::reshape(const point3i &size)
 
 void UI::idle()
 {
-	manager.step();
+	bool redraw = manager.step();
+
+	if(redraw)
+	{
+		glutPostRedisplay();
+	}
+
+	Sleep(0);
 }
 
 

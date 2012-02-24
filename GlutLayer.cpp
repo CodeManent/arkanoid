@@ -43,7 +43,7 @@ void display(void){
 void keyboard(unsigned char key, int x, int y)
 {
 	if(ui){
-		ui->keyboard(key, point3i(x, y), Input::Value::ButtonDown);
+		ui->keyboard(key, point2i(x, y), Input::Value::ButtonDown);
 	}
 }
 
@@ -54,7 +54,7 @@ void keyboard(unsigned char key, int x, int y)
 void keyboardUp(unsigned char key, int x, int y)
 {
 	if(ui){
-		ui->keyboard(key, point3i(x, y), Input::Value::ButtonUp);
+		ui->keyboard(key, point2i(x, y), Input::Value::ButtonUp);
 	}
 }
 
@@ -65,7 +65,7 @@ void keyboardUp(unsigned char key, int x, int y)
 void special(int key, int x, int y)
 {
 	if(ui){
-		ui->keyboard(key, point3i(x, y), Input::Value::ButtonDown);
+		ui->keyboard(key, point2i(x, y), Input::Value::ButtonDown);
 	}
 }
 
@@ -76,7 +76,7 @@ void special(int key, int x, int y)
 void specialUp(int key, int x, int y)
 {
 	if(ui){
-		ui->keyboard(key, point3i(x, y), Input::Value::ButtonUp);
+		ui->keyboard(key, point2i(x, y), Input::Value::ButtonUp);
 	}
 }
 
@@ -87,7 +87,7 @@ void specialUp(int key, int x, int y)
 void reshape(int width, int height)
 {
 	if(ui){
-		ui->reshape(point3i(width, height));
+		ui->reshape(point2i(width, height));
 	}
 }
 
