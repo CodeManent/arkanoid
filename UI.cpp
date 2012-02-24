@@ -2,6 +2,7 @@
 #include "GlutLayer.h"
 #include "Input.h"
 
+#include <iostream>
 #include <cstdlib>
 #include <gl/glut.h>
 
@@ -43,6 +44,17 @@ UI::~UI(void)
 
 void UI::display(){
 	manager.draw();
+	GLenum err;
+	unsigned int errCount = 0;
+
+	while((err = glGetError()) != GL_NO_ERROR){
+		std::cout << "GL error: " << gluErrorString(err) << std::endl;
+		if(++errCount > 100){
+			std::cout << "Too many GL Errors" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+	}
 	glutSwapBuffers();
 }
 

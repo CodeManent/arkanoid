@@ -1,13 +1,12 @@
 #include "Brick.h"
 
 namespace Arkanoid{
-	Brick::Brick(const point3f &position, const point3f &size)
-		:Actor(position, size, point3f(0.4f, 0.7f, 0.1f))
+	Brick::Brick(const point2f &position, const point2f &size, const point3f &color)
+		:RectangleActor(position, size, color)
 	{
 	}
 
-	void Brick::draw() const
+	Brick::~Brick()
 	{
-		this->Actor::draw();
 	}
 }

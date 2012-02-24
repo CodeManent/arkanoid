@@ -4,19 +4,19 @@
 namespace Arkanoid{
 	const float Racket::acceleration = 0.0002f;
 	const float Racket::maxSpeed = 0.002f;
+	const point3f Racket::racketColor(0.974f, 0.157f, 0.214f);
 
-	Racket::Racket(const point3f &position, const point3f &size)
-		:Actor(position, size, point3f(0.974f, 0.157f, 0.214f)),
+	Racket::Racket(const point2f &position, const point2f &size)
+		:RectangleActor(position, size, racketColor),
 		speed(0.0f),
 		direction(None)
 	{
 	}
 
-	void Racket::draw() const
+	Racket::~Racket()
 	{
-		(*this).Actor::draw();
-
 	}
+
 
 	void Racket::move(const Input &input)
 	{
@@ -77,7 +77,6 @@ namespace Arkanoid{
 					}
 				}
 		}
-
 
 		if(speed != 0.0f){
 			position.x += speed;
