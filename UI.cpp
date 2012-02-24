@@ -2,7 +2,7 @@
 #include "GlutLayer.h"
 #include "Input.h"
 
-#include <windows.h>// DWORD, GetTickCount, Sleep
+#include <windows.h>// Sleep
 #include <iostream>
 #include <cstdlib>
 #include <gl/glut.h>
@@ -51,10 +51,10 @@ void UI::display(){
 
 	if(showFps)
 	{
-		static DWORD startTime = GetTickCount();
+		static DWORD startTime = glutGet(GLUT_ELAPSED_TIME);
 		static unsigned int frames = 0;
 		++frames;
-		const DWORD currentTime = GetTickCount();
+		const DWORD currentTime = glutGet(GLUT_ELAPSED_TIME);
 		if(currentTime - startTime >= 1000){
 			std::cout << frames << " fps" << std::endl;
 			startTime = currentTime;
@@ -123,16 +123,27 @@ void UI::reshape(const point2i &size)
 //---------------------------------------------------------
 
 
+//idle will sleep for the remaining timeframe
 void UI::idle()
 {
+	const float frameTime = 1000.0f/65.0f;
+	const int startTime = glutGet(GLUT_ELAPSED_TIME);
+	
 	bool redraw = manager.step();
 
 	if(redraw)
 	{
-		glutPostRedisplay();
+		//glutPostRedisplay();
+		display();
 	}
 
-	Sleep(0);
+	const DWORD currentTime = glutGet(GLUT_ELAPSED_TIME);
+	const float elapsed = (const float)(currentTime - startTime);
+
+	if(elapsed < frameTime){
+		Sleep((const int)(frameTime - elapsed));
+		//Sleep(1);
+	}
 }
 
 
