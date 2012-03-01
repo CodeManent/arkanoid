@@ -126,15 +126,15 @@ void UI::reshape(const point2i &size)
 //idle will sleep for the remaining timeframe
 void UI::idle()
 {
-	const float frameTime = 1000.0f/65.0f;
+	const float frameTime = 1000.0f/60.0f;
 	const int startTime = glutGet(GLUT_ELAPSED_TIME);
 	
 	bool redraw = manager.step();
 
 	if(redraw)
 	{
-		//glutPostRedisplay();
-		display();
+		glutPostRedisplay();
+		//display();
 	}
 
 	const DWORD currentTime = glutGet(GLUT_ELAPSED_TIME);
@@ -142,7 +142,6 @@ void UI::idle()
 
 	if(elapsed < frameTime){
 		Sleep((const int)(frameTime - elapsed));
-		//Sleep(1);
 	}
 }
 

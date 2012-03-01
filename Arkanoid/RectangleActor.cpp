@@ -37,4 +37,9 @@ namespace Arkanoid{
 			glVertex2f(bottomright.x, topleft.y);
 		glEnd();
 	}
+
+	const point2f& RectangleActor::getSize() const
+	{
+		return size;
+	}
 }

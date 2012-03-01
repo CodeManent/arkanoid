@@ -2,8 +2,8 @@
 
 
 namespace Arkanoid{
-	const float Racket::acceleration = 0.002f;
-	const float Racket::maxSpeed = 0.02f;
+	const float Racket::acceleration = 0.02f;
+	const float Racket::maxSpeed = 0.2f;
 	const point3f Racket::racketColor(0.974f, 0.157f, 0.214f);
 
 	Racket::Racket(const point2f &position, const point2f &size)
@@ -84,11 +84,16 @@ namespace Arkanoid{
 				speed = 0;
 				position.x = size.x/2;
 			}
-			else if(position.x + size.x/2 > 1.0f){
+			else if(position.x + size.x/2 > 10.0f){
 				speed = 0;
-				position.x = 1.0f - size.x/2;
+				position.x = 10.0f - size.x/2;
 			}
 		}
 
+	}
+
+	point2f Racket::getSpeed() const
+	{
+		return speed;
 	}
 }

@@ -23,16 +23,12 @@ public:
 	float distance(const point3<T> &p2) const	{	return (*this - p2).length();	}
 
 	point3<T>& normalise(){
-		float len = length();
-		if(len == 0){
-			throw(std::runtime_error("Division By Zero"));
-		}
-		*this /= len;
+		*this /= length();
 		return *this;
 	}
 
 	point3<T>& fast_normalise(){
-		float isqrt = InvSqrt(x*x + y*y + z*z);
+		const float &isqrt = InvSqrt(x*x + y*y + z*z);
 		*this *= isqrt;
 		return *this;
 	}
@@ -43,14 +39,11 @@ public:
 	point3<T>& operator+=(const point3<T> &p2)		{	x += p2.x; y += p2.y; z += p2.z; return *this;						}
 	point3<T>& operator-=(const point3<T> &p2)		{	x -= p2.x; y -= p2.y; z -= p2.z; return *this;						}
 	point3<T>& operator*=(const T &d)				{	x *= d; y *=d; z *=d; return *this;									}
-	point3<T>& operator/=(const T &d)				{	x /= d; y /=d; z /=d; return *this;									}
 	point3<T> operator+(const point3<T> &p2) const	{	return point3<T>(x+p2.x, y+p2.y, z+p2.z);							}
 	point3<T> operator-(const point3<T> &p2) const	{	return point3<T>(x-p2.x, y-p2.y, z-p2.z);							}
 	point3<T> operator-() const						{	return point3<T>(-x, -y, -z);										}
 	point3<T> operator*(const T &d) const			{	return point3<T>(x*d, y*d, z*d);									}
 	point3<T> operator*(const point3<T> &p2) const	{	return point3<T>(x*p2.x, y*p2.y, z*p2.z);							}
-	point3<T> operator/(const point3<T> &p2) const	{	return point3<T>(x/p2.x, y/p2.y, z/p2.z);							}
-	point3<T> operator/(const T &d) const			{	return point3<T>(x/d, y/d, z/d);									}
 	point3<T>& operator=(const point3<T> &p2)		{	x = p2.x; y = p2.y; z = p2.z; return *this;							}
 	bool operator==(const point3<T> &p2) const		{	return ((x == p2.x) && (y == p2.y) && (z == p2.z))? true : false;	}
 	bool operator!=(const point3<T> &p2) const		{	return !(*this == p2);												}
@@ -62,6 +55,21 @@ public:
 	bool operator> (const T &d) const				{	return ((x > d)     && (y > d)     && (z > d))    ? true : false;	}
 	bool operator>= (const point3<T> &p2) const		{	return ((x >= p2.x) && (y >= p2.y) && (z >= p2.z))? true : false;	}
 	bool operator>= (const T &d) const				{	return ((x >= d)    && (y >= d)    && (z >= d))   ? true : false;	}
+	point3<T> operator/(const point3<T> &p2) const
+	{
+		if(!(p2.x && p2.y && p2.z)) throw(std::runtime_error("Division By Zero"));
+		return point3<T>(x/p2.x, y/p2.y, z/p2.z);
+	}
+	point3<T> operator/(const T &d) const
+	{
+		if(!d) throw(std::runtime_error("Division By Zero"));
+		return point3<T>(x/d, y/d, z/d);
+	}
+	point3<T>& operator/=(const T &d)
+	{
+		if(!d) throw(std::runtime_error("Division By Zero"));
+		x /= d; y /=d; z /=d; return *this;
+	}
 	std::string toString() const{
 		std::stringstream ss;
 		ss << '(' << x << ", " << y << ", " << z << ')';

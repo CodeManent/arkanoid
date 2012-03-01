@@ -11,6 +11,7 @@ namespace Arkanoid{
 		virtual ~RectangleActor(void);
 
 		virtual void draw() const;
+		virtual const point2f& getSize() const;
 
 	protected:
 		point2f size;

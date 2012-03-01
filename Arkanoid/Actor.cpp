@@ -21,4 +21,9 @@ namespace Arkanoid{
 	void Actor::suicide(){
 		delete this;
 	}
+
+	const point2f& Actor::getPosition() const
+	{
+		return position;
+	}
 }

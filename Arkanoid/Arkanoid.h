@@ -28,5 +28,7 @@ namespace Arkanoid{
 		std::auto_ptr<Ball> ball;
 		std::auto_ptr<Racket> racket;
 		std::vector<Brick *> bricks;
+		std::vector<const point2f> randomPoints;
+		bool paused;
 	};
 }

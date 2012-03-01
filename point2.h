@@ -17,37 +17,22 @@ public:
 	point2(const T arr[2]):x(arr[0]), y(arr[1]){}
 	point2(const point2<T> &p2):x(p2.x), y(p2.y){}
 	
-	float length() const						{	return sqrt(x*x + y*y);	}
-	float distance(const point2<T> &p2) const	{	return (*this - p2).length();	}
-
-	point2<T>& normalise(){
-		float len = length();
-		if(len == 0){
-			throw(std::runtime_error("Division By Zero"));
-		}
-		*this /= len;
-		return *this;
-	}
-
-	point2<T>& fast_normalise(){
-		float isqrt = InvSqrt(x*x + y*y);
-		*this *= isqrt;
-		return *this;
-	}
-
+	float length() const							{	return sqrt(x*x + y*y);								}
+	float distance(const point2<T> &p2) const		{	return (*this - p2).length();						}
+	point2<T> normal()const							{	return *this/length();								}
+	point2<T> fast_normal()const					{	return *this*InvSqrt(x*x + y*y);					}
+	point2<T>& normalise()							{	return *this /= length();							}
+	point2<T>& fast_normalise()						{	return *this *= InvSqrt(x*x + y*y);					}
 	T dot(const point2<T> &p2) const				{	return x*p2.x + y*p2.y;								}
 
 	point2<T>& operator+=(const point2<T> &p2)		{	x += p2.x; y += p2.y; return *this;					}
 	point2<T>& operator-=(const point2<T> &p2)		{	x -= p2.x; y -= p2.y; return *this;					}
 	point2<T>& operator*=(const T &d)				{	x *= d; y *=d; return *this;						}
-	point2<T>& operator/=(const T &d)				{	x /= d; y /=d; return *this;						}
 	point2<T> operator+(const point2<T> &p2) const	{	return point2<T>(x+p2.x, y+p2.y);					}
 	point2<T> operator-(const point2<T> &p2) const	{	return point2<T>(x-p2.x, y-p2.y);					}
 	point2<T> operator-() const						{	return point2<T>(-x, -y);							}
 	point2<T> operator*(const T &d) const			{	return point2<T>(x*d, y*d);							}
 	point2<T> operator*(const point2<T> &p2) const	{	return point2<T>(x*p2.x, y*p2.y);					}
-	point2<T> operator/(const point2<T> &p2) const	{	return point2<T>(x/p2.x, y/p2.y);					}
-	point2<T> operator/(const T &d) const			{	return point2<T>(x/d, y/d);							}
 	point2<T>& operator=(const point2<T> &p2)		{	x = p2.x; y = p2.y; return *this;					}
 	bool operator==(const point2<T> &p2) const		{	return ((x == p2.x) && (y == p2.y))? true : false;	}
 	bool operator!=(const point2<T> &p2) const		{	return !(*this == p2);								}
@@ -59,6 +44,20 @@ public:
 	bool operator> (const T &d) const				{	return ((x > d)     && (y > d))    ? true : false;	}
 	bool operator>= (const point2<T> &p2) const		{	return ((x >= p2.x) && (y >= p2.y))? true : false;	}
 	bool operator>= (const T &d) const				{	return ((x >= d)    && (y >= d))   ? true : false;	}
+	point2<T> operator/(const point2<T> &p2) const
+	{
+		if(!(p2.x && p2.y)) throw(std::runtime_error("Division by zero"));
+		return point2<T>(x/p2.x, y/p2.y);
+	}
+	point2<T> operator/(const T &d) const{
+		if(!d) throw(std::runtime_error("Division by zero"));
+		return point2<T>(x/d, y/d);
+	}
+	point2<T>& operator/=(const T &d)
+	{
+		if(!d) throw(std::runtime_error("Division by zero"));
+		x /= d; y /=d; return *this;
+	}
 	std::string toString() const{
 		std::stringstream ss;
 		ss << '(' << x << ", " << y << ')';

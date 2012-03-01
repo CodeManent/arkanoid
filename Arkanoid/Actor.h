@@ -13,6 +13,7 @@ namespace Arkanoid{
 		virtual ~Actor();
 
 		virtual void draw() const = 0;
+		virtual const point2f& getPosition() const;
 
 		virtual void suicide();
 
