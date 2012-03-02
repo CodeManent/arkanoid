@@ -10,7 +10,8 @@ public:
 	~UI(void);
 
 	void display(void);
-	void keyboard(int key, const point2i &pos, Input::Value::ButtonValue buttonValue);
+	//void keyboard(int key, const point2i &pos, Input::Value::ButtonValue buttonValue);
+	void keyboard(const Input &input);
 	void reshape(const point2i &size);
 	void idle(void);
 	void run();

@@ -1,4 +1,5 @@
 #include "StateManager.h"
+#include "ConsoleState/ConsoleState.h"
 
 #include <memory>
 #include <vector>
@@ -9,6 +10,7 @@
 
 
 StateManager::StateManager(std::auto_ptr<State> state)
+	:visibleConsole(false)
 {
 	stateStack.push_back(state.get());
 	state.release();
@@ -56,6 +58,7 @@ bool StateManager::step()
 		//remove top state from the stack
 		stateDeleter( stateStack.back());
 		stateStack.pop_back();
+		visibleConsole = false;
 
 		//push the substitute state if there is one
 		if(substitute.get()){
@@ -90,6 +93,15 @@ bool StateManager::step()
 
 void StateManager::forwardInput(const Input &input)
 {
+	if(!visibleConsole)
+		if(input.type == Input::Character && input.value.buttonValue == Input::Value::ButtonDown)
+			if(input.value.charValue == '`' || input.value.charValue == '~')
+			{
+				pushState( std::auto_ptr<State>( new ConsoleState() ) );
+				visibleConsole = true;
+				return;
+			}
+
 	stateStack.back()->input(input);
 }
 
@@ -102,6 +114,22 @@ void StateManager::pushState(std::auto_ptr<State> state)
 	stateStack.push_back(state.get());
 	state.release();
 }
+
+
+//---------------------------------------------------------
+
+
+void StateManager::exec(std::string command)
+{
+	std::vector<State *>::reverse_iterator state;
+	for(state = stateStack.rbegin(); state != stateStack.rend(); ++state)
+	{
+		if((*state)->exec(command))
+			break;
+	}
+
+}
+
 
 
 //---------------------------------------------------------

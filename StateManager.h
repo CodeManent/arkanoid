@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 class StateManager
 {
@@ -15,9 +16,10 @@ public:
 	bool step(); //true to update the display
 	void forwardInput(const Input &i);
 	void pushState(std::auto_ptr<State> state);
+	void exec(std::string);
 
 protected:
 	static void stateDeleter(State *state);
 	std::vector<State *> stateStack;
-
+	bool visibleConsole;
 };

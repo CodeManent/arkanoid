@@ -2,6 +2,8 @@
 #include "GlutLayer.h"
 #include "Input.h"
 
+#include "Console.h"
+
 #include <windows.h>// Sleep
 #include <iostream>
 #include <cstdlib>
@@ -57,6 +59,11 @@ void UI::display(){
 		const DWORD currentTime = glutGet(GLUT_ELAPSED_TIME);
 		if(currentTime - startTime >= 1000){
 			std::cout << frames << " fps" << std::endl;
+			
+			std::stringstream ss;
+			ss << frames << " fps";
+			console.write(ss.str());
+
 			startTime = currentTime;
 			frames = 0;
 		}
@@ -81,24 +88,36 @@ void UI::display(){
 
 //---------------------------------------------------------
 
-
+/*
 void UI::keyboard(int key, const point2i &pos, Input::Value::ButtonValue buttonValue)
 {
 	Input input;
 
+	input.value.buttonValue = buttonValue;
+
+	if(buttonValue == Input::Value::ButtonDown)
+		std::cout << "key: " << key << "\t" << (char)key << std::endl;
+
 	switch(key){
-		case 27:/*Esc*/		input.type = Input::Back;	break;
-		case 13:/*Enter*/	input.type = Input::Start;	break;
+		case 27:			input.type = Input::Back;	break; // ESC
+		case 13:			input.type = Input::Start;	break; // Enter
 		case GLUT_KEY_UP:	input.type = Input::Up;		break;
 		case GLUT_KEY_DOWN:	input.type = Input::Down;	break;
 		case GLUT_KEY_LEFT:	input.type = Input::Left;	break;
 		case GLUT_KEY_RIGHT:input.type = Input::Right;	break;
 			//todo: add more input
-		default:
-			return;
-	}
-	input.value.buttonValue = buttonValue;
 
+		default:
+			input.type = Input::Character;
+			input.value.charValue =key;
+	}
+
+	manager.forwardInput(input);
+}
+*/
+
+void UI::keyboard(const Input& input)
+{
 	manager.forwardInput(input);
 }
 
@@ -141,7 +160,7 @@ void UI::idle()
 	const float elapsed = (const float)(currentTime - startTime);
 
 	if(elapsed < frameTime){
-		Sleep((const int)(frameTime - elapsed));
+		Sleep((const int)(frameTime - elapsed)/2);
 	}
 }
 

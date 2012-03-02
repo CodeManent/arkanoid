@@ -1,6 +1,8 @@
 #pragma once
-#include <memory>
 #include "Input.h"
+
+#include <memory>
+#include <string>
 
 class State
 {
@@ -14,6 +16,7 @@ public:
 	virtual bool isActive() = 0;
 	virtual bool isFinished() = 0;
 	virtual std::auto_ptr<State> getNextState();
+	virtual bool exec(std::string);
 
 protected:
 	bool active;

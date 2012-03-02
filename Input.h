@@ -13,15 +13,17 @@ struct Input
 		A,
 		B,
 		X,
-		Y
+		Y,
+		Character
 	} type;
 
-	union Value{
+	struct Value{
 		enum ButtonValue{
 			ButtonDown,
 			ButtonUp
 		}buttonValue;
 		float rangeValue;
+		int charValue;
 	}value;
 };
 

@@ -1,4 +1,5 @@
 #include "Arkanoid.h"
+
 #include <algorithm>
 #include <functional>
 
@@ -155,6 +156,7 @@ namespace Arkanoid{
 			case Input::Start:
 				if(input.value.buttonValue == Input::Value::ButtonDown)
 					paused = !paused;
+
 				break;
 
 			default:

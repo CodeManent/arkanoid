@@ -324,6 +324,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Console.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\GlutLayer.cpp"
 				>
 			</File>
@@ -353,6 +357,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\Console.h"
+				>
+			</File>
 			<File
 				RelativePath=".\GlutLayer.h"
 				>
@@ -467,6 +475,18 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="ConsoleState"
+			>
+			<File
+				RelativePath=".\ConsoleState\ConsoleState.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ConsoleState\ConsoleState.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

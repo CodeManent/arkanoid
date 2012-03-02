@@ -23,6 +23,13 @@ void registerUI(UI &uiRef){
 
 
 void unregisterUI(){
+	glutReshapeFunc(NULL);
+	glutDisplayFunc(NULL);
+	glutKeyboardFunc(NULL);
+	glutKeyboardUpFunc(NULL);
+	glutSpecialFunc(NULL);
+	glutSpecialUpFunc(NULL);
+	glutIdleFunc(NULL);
 	ui = NULL;
 }
 
@@ -43,7 +50,20 @@ void display(void){
 void keyboard(unsigned char key, int x, int y)
 {
 	if(ui){
-		ui->keyboard(key, point2i(x, y), Input::Value::ButtonDown);
+		//ui->keyboard(key, point2i(x, y), Input::Value::ButtonDown);
+		Input input;
+		input.value.buttonValue = Input::Value::ButtonDown;
+		switch(key){
+			case 27:			input.type = Input::Back;	break; // ESC
+			case 13:			input.type = Input::Start;	break; // Enter
+				//todo: add more input
+
+			default:
+				input.type = Input::Character;
+				input.value.charValue =key;
+		}
+
+		ui->keyboard(input);
 	}
 }
 
@@ -54,7 +74,20 @@ void keyboard(unsigned char key, int x, int y)
 void keyboardUp(unsigned char key, int x, int y)
 {
 	if(ui){
-		ui->keyboard(key, point2i(x, y), Input::Value::ButtonUp);
+		//ui->keyboard(key, point2i(x, y), Input::Value::ButtonUp);
+		Input input;
+		input.value.buttonValue = Input::Value::ButtonUp;
+		switch(key){
+			case 27:			input.type = Input::Back;	break; // ESC
+			case 13:			input.type = Input::Start;	break; // Enter
+				//todo: add more input
+
+			default:
+				input.type = Input::Character;
+				input.value.charValue =key;
+		}
+
+		ui->keyboard(input);
 	}
 }
 
@@ -65,7 +98,18 @@ void keyboardUp(unsigned char key, int x, int y)
 void special(int key, int x, int y)
 {
 	if(ui){
-		ui->keyboard(key, point2i(x, y), Input::Value::ButtonDown);
+		//ui->keyboard(key, point2i(x, y), Input::Value::ButtonDown);
+		Input input;
+		input.value.buttonValue = Input::Value::ButtonDown;
+
+		switch(key){
+			case GLUT_KEY_UP:	input.type = Input::Up;		break;
+			case GLUT_KEY_DOWN:	input.type = Input::Down;	break;
+			case GLUT_KEY_LEFT:	input.type = Input::Left;	break;
+			case GLUT_KEY_RIGHT:input.type = Input::Right;	break;
+				//todo: add more input`
+		}
+		ui->keyboard(input);
 	}
 }
 
@@ -76,7 +120,18 @@ void special(int key, int x, int y)
 void specialUp(int key, int x, int y)
 {
 	if(ui){
-		ui->keyboard(key, point2i(x, y), Input::Value::ButtonUp);
+		//ui->keyboard(key, point2i(x, y), Input::Value::ButtonDoUp);
+		Input input;
+		input.value.buttonValue = Input::Value::ButtonUp;
+
+		switch(key){
+			case GLUT_KEY_UP:	input.type = Input::Up;		break;
+			case GLUT_KEY_DOWN:	input.type = Input::Down;	break;
+			case GLUT_KEY_LEFT:	input.type = Input::Left;	break;
+			case GLUT_KEY_RIGHT:input.type = Input::Right;	break;
+				//todo: add more input
+		}
+		ui->keyboard(input);
 	}
 }
 

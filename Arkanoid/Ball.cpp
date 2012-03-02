@@ -149,8 +149,8 @@ namespace Arkanoid{
 		}while(timeFrame > 0.0f );
 
 		//hard limits
-		position.x = ( position.x < radious ) ? radious : ( ( position.x > 10.0f - radious ) ? 10.0f-radious : position.x );
-		position.y = ( position.y < radious ) ? radious : ( ( position.y > 10.0f - radious ) ? 10.0f-radious : position.y );
+		position.x = ( position.x < 0 ) ? radious*2 : ( ( position.x > 10.0f ) ? 10.0f-radious*2 : position.x );
+		position.y = ( position.y < 0 ) ? radious*2 : ( ( position.y > 10.0f ) ? 10.0f-radious*2 : position.y );
 
 		//fix speed vector lrngth (because of floating point errors)
 		speed = speed.normal()*maxSpeed;
