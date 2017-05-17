@@ -3,6 +3,7 @@
 #include "Input.h"
 
 #include "Console.h"
+#include "ExitException.h"
 
 #include <windows.h>// Sleep
 #include <iostream>
@@ -14,24 +15,31 @@
 
 UI::UI(int &argc, char *argv[], StateManager &manager)
 	:manager(manager),
-	windowSize(800, 600),
-	showFps(true)
+	windowSize(800, 533),
+	showFps(false),
+	windowId(-1)
 {
 	registerUI(*this);
 
 	glutInit(&argc, argv);
 	glutInitWindowSize(windowSize.x, windowSize.y);
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_RGBA | /*GLUT_SINGLE*/ GLUT_DOUBLE );
 
-	glutCreateWindow("The Game");
+	windowId = glutCreateWindow("The Game");
 
 	glutReshapeFunc(::reshape);
 	glutDisplayFunc(::display);
+
 	glutKeyboardFunc(::keyboard);
 	glutKeyboardUpFunc(::keyboardUp);
+
 	glutSpecialFunc(::special);
 	glutSpecialUpFunc(::specialUp);
+
+	glutMouseFunc(::mouse);
+
 	glutIdleFunc(::idle);
+	timeBeginPeriod(1);
 }
 
 
@@ -40,6 +48,21 @@ UI::UI(int &argc, char *argv[], StateManager &manager)
 
 UI::~UI(void)
 {
+	timeEndPeriod(1);
+
+	glutDestroyWindow(windowId);
+
+	/*
+	glutReshapeFunc(NULL);
+	glutDisplayFunc(NULL);
+	glutKeyboardFunc(NULL);
+	glutKeyboardUpFunc(NULL);
+	glutSpecialFunc(NULL);
+	glutSpecialUpFunc(NULL);
+	glutMouseFunc(NULL);
+	glutIdleFunc(NULL);
+	*/
+
 	unregisterUI();
 }
 
@@ -48,6 +71,8 @@ UI::~UI(void)
 
 
 void UI::display(){
+
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	manager.draw();
 
@@ -77,12 +102,16 @@ void UI::display(){
 			std::cout << "GL error: " << gluErrorString(err) << std::endl;
 			if(++errCount > 100){
 				std::cout << "Too many GL Errors" << std::endl;
-				exit(EXIT_FAILURE);
+				//exit(EXIT_FAILURE);
+				throw ExitException();
 			}
 		}
 	}
 
-	glutSwapBuffers();
+	if( glutGet(GLUT_WINDOW_DOUBLEBUFFER) )
+		glutSwapBuffers();
+	else
+		glFlush();
 }
 
 
@@ -116,7 +145,7 @@ void UI::keyboard(int key, const point2i &pos, Input::Value::ButtonValue buttonV
 }
 */
 
-void UI::keyboard(const Input& input)
+void UI::input(const Input& input)
 {
 	manager.forwardInput(input);
 }
@@ -147,7 +176,7 @@ void UI::idle()
 {
 	const float frameTime = 1000.0f/60.0f;
 	const int startTime = glutGet(GLUT_ELAPSED_TIME);
-	
+
 	bool redraw = manager.step();
 
 	if(redraw)
@@ -156,11 +185,13 @@ void UI::idle()
 		//display();
 	}
 
+	
+
 	const DWORD currentTime = glutGet(GLUT_ELAPSED_TIME);
 	const float elapsed = (const float)(currentTime - startTime);
 
 	if(elapsed < frameTime){
-		Sleep((const int)(frameTime - elapsed)/2);
+		Sleep((const int)(frameTime - elapsed));
 	}
 }
 
@@ -172,3 +203,4 @@ void UI::run()
 {
 	glutMainLoop();
 }
+

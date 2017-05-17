@@ -1,31 +1,93 @@
 #include "Arkanoid.h"
+#include "WinState.h"
+#include "../Console.h"
+#include "../ResourceManager.h"
+
+#include "../Feel/Feel.h"
 
 #include <algorithm>
 #include <functional>
+#include <fstream>
 
 #include <cstdlib>
 #include <gl/glut.h>
-#include <iostream>
+//#include <iostream>
 
 namespace Arkanoid{
 
 	/*
+		Preload resources
 		Construct game objects
 		Position actors
 	*/
 	//board size 10.0f, 10.0f
-	Arkanoid::Arkanoid(void)
-		:ball(NULL),
-		racket(NULL),
-		paused(false)
+	Arkanoid::Arkanoid(std::string board)
+		:ball(NULL)
+		,racket(NULL)
+		,paused(true)
+		,lockedBall(true)
+		,lives(3)
+		,boardName(board)
+		,win(true)
 	{
+		console.write(std::string("Arkanoid: start ") + board );
+		
+		//preload textures and sounds
+		resourceManager.loadTexture( "Arkanoid\\arinoid_master.png" );
+
+		resourceManager.loadSound( "Arkanoid\\ogg\\Ark_Game_Start_Music.ogg" );
+		resourceManager.loadSound( "Arkanoid\\ogg\\Ark_die.ogg" );
+		resourceManager.loadSound( "Arkanoid\\ogg\\Ark_release.ogg" );
+		resourceManager.loadSound( "Arkanoid\\ogg\\Ark_Bounce_2.ogg" );
+
+
+		const point2f racketPosition(5.0f, 9.5f);
+		const point2f racketSize(1.3f, 0.2f);
+		racket.reset(new Racket(racketPosition, racketSize));
+
+		{
+			const float ballRadious = 0.1f;
+			const point2f ballPosition(racketPosition.x, racketPosition.y - racketSize.y - ballRadious);
+			const point3f ballColor(0.7f, 0.1f, 0.5f);
+			ball.reset(new Ball(ballPosition, ballRadious, ballColor));
+		}
+
+		std::string path("..\\assets\\Arkanoid\\boards\\");
+		path += board + ".brd";
+
+		loadBoard(path);
+
+
+		resourceManager.playSound( "Arkanoid\\ogg\\Ark_Game_Start_Music.ogg" );
+	}
+
+	Arkanoid::Arkanoid(void)
+		:ball(NULL)
+		,racket(NULL)
+		,paused(true)
+		,lockedBall(true)
+		,lives(3)
+		,boardName("default")
+		,win(true)
+	{
+		console.write("Arkanoid: start default");
+
+		//preload textures and sounds
+		resourceManager.loadTexture( "Arkanoid\\arinoid_master.png" );
+
+		resourceManager.loadSound( "Arkanoid\\ogg\\Ark_Game_Start_Music.ogg" );
+		resourceManager.loadSound( "Arkanoid\\ogg\\Ark_die.ogg" );
+		resourceManager.loadSound( "Arkanoid\\ogg\\Ark_release.ogg" );
+		resourceManager.loadSound( "Arkanoid\\ogg\\Ark_Bounce_2.ogg" );
+
+
 		const point2f racketPosition(5.0f, 9.5f);
 		const point2f racketSize(1.3f, 0.2f);
 		racket.reset(new Racket(racketPosition, racketSize));
 
 
 		{
-			const float ballRadious = 0.15f;
+			const float ballRadious = 0.1f;
 			const point2f ballPosition(racketPosition.x, racketPosition.y - racketSize.y - ballRadious);
 			const point3f ballColor(0.7f, 0.1f, 0.5f);
 			ball.reset(new Ball(ballPosition, ballRadious, ballColor));
@@ -44,22 +106,11 @@ namespace Arkanoid{
 
 					const point3f color = point3f(x/brickCount.x, y/brickCount.y, (x+y)/(brickCount.x + brickCount.y));
 
-					bricks.push_back(new Brick(position, brickSize, color));
+					bricks.push_back(Brick(position, brickSize, color));
 				}
 			}
 		}
-/*
-		for(int i=0; i < 1000; ++i){
-			randomPoints.push_back(point2f(10.0f*(float)rand()/float(RAND_MAX), 10.0f*(float)rand()/float(RAND_MAX)));
-		}
-//*/
-/*
-		for(float y = 0.5f; y < 10; y+=0.5f){
-			for(float x = 0.5f; x < 10; x+=0.5f){
-				randomPoints.push_back(point2f(x, y));
-			}
-		}
-//*/
+		resourceManager.playSound( "Arkanoid\\ogg\\Ark_Game_Start_Music.ogg" );
 	}
 
 
@@ -72,7 +123,7 @@ namespace Arkanoid{
 		using std::for_each;
 		using std::mem_fun;
 
-		for_each(bricks.begin(), bricks.end(), mem_fun(&Actor::suicide));
+		//for_each(bricks.begin(), bricks.end(), mem_fun(&Actor::suicide));
 	}
 
 
@@ -88,7 +139,26 @@ namespace Arkanoid{
 
 		//move ball
 		if(!paused)
-			ball->step(randomPoints, bricks, *racket.get());
+			ball->step(bricks, *racket.get());
+		else if(lockedBall)
+		{
+			ball->setPosition( racket->getPosition() - point2f( 0.0f, racket->getSize().y + ball->getRadious() ) );
+			ball->setSpeedDirection(point2f(0.7f, -1.0f));
+		}
+		
+		if(ball->getPosition().y > 10.0f)
+		{
+			paused = true;
+			lockedBall = true;
+			--lives;
+			if(lives == 0){
+				finished = true;
+				win = false;
+			}
+			console.write("Life lost");
+			resourceManager.playSound( "Arkanoid\\ogg\\Ark_die.ogg" );
+		}
+
 
 		if(bricks.empty())
 		{
@@ -105,32 +175,60 @@ namespace Arkanoid{
 
 	void Arkanoid::draw()
 	{
-		glClearColor(.9f, .75f, .7f, 0.0f);
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glLoadIdentity();
-		//glTranslatef(0.5f, 0.5f, 0.0f);
 		glScalef(1.0f/10.0f, 1.0f/10.0f, 1.0f/10.0f);
 
-//*
-		using std::for_each;
-		using std::mem_fun;
+		glEnable(GL_TEXTURE_2D);
+		resourceManager.bindTexture("Arkanoid\\arinoid_master.png");
 
-		for_each(bricks.begin(), bricks.end(), mem_fun(&Brick::draw));
+		glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+
+		//draw background
+		glPushMatrix();
+			glScalef(1.0f/2.5f, 1.0f/2.5f, 1.0f);
+			glBegin(GL_QUADS);
+			for(unsigned int y = 0; y < 25; ++y)
+				for(unsigned int x = 0; x < 25; ++x)
+				{
+					glTexCoord2i(162, 322);
+					glVertex2i(x, y);
+
+					glTexCoord2i(162, 351);
+					glVertex2i(x, y+1);
+
+					glTexCoord2i(191, 351);
+					glVertex2i(x+1, y+1);
+
+					glTexCoord2i(191, 322);
+					glVertex2i(x+1, y);
+				}
+			glEnd();
+		glPopMatrix();
+
+		//draw lives
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_QUADS);
+		for(unsigned int live = 0; live+1 < lives; ++live)
+		{
+			glTexCoord2i(425, 141);
+			glVertex2f(0.5f+live*0.4, 9.7f);
+			glTexCoord2i(425, 149);
+			glVertex2f(0.5f+live*0.4, 9.8f);
+			glTexCoord2i(442, 149);
+			glVertex2f(0.8f+live*0.4, 9.8f);
+			glTexCoord2i(442, 141);
+			glVertex2f(0.8f+live*0.4, 9.7f);
+		}
+		glEnd();
+
+		glDisable(GL_TEXTURE_2D);
+
+//*
+
+		std::for_each(bricks.begin(), bricks.end(), std::mem_fun_ref(&Brick::draw));
 //*/
 		ball->draw();
 		racket->draw();
-
-		glColor3f(1.0f, 0.0f, 0.0f);
-
-		glClear(GL_DEPTH_BUFFER_BIT);
-		glBegin(GL_POINTS);
-		std::vector<const point2f>::const_iterator point;
-		for(point = randomPoints.begin(); point != randomPoints.end(); ++point)
-		{
-			glVertex2f(point->x, point->y);
-		}
-		glEnd();
 	}
 
 
@@ -150,12 +248,17 @@ namespace Arkanoid{
 				break;
 
 			case Input::Back:
-				finished = true;
+				if(input.value.buttonValue == Input::Value::ButtonDown)
+					win = false;
+					finished = true;
 				break;
 
 			case Input::Start:
 				if(input.value.buttonValue == Input::Value::ButtonDown)
+				{
 					paused = !paused;
+					lockedBall = false;
+				}
 
 				break;
 
@@ -167,19 +270,81 @@ namespace Arkanoid{
 
 
 
-
-
-	bool Arkanoid::isActive(){
-		return active;
+	std::auto_ptr<State> Arkanoid::getNextState()
+	{
+		State *nextState = NULL;
+		if( finished )
+		{
+			if( win )
+			{
+				if( boardName == "first" )
+					nextState = new Arkanoid("half");
+				else if( boardName == "half" )
+					nextState = new Arkanoid("heart");
+				else if( boardName == "heart")
+					nextState = new WinState();
+			}
+			else
+			{
+				nextState = new Feel();
+			}
+		}
+		return std::auto_ptr<State>(nextState);
 	}
 
-
-
-
-
-
-	bool Arkanoid::isFinished()
+	void Arkanoid::loadBoard(std::string path)
 	{
-		return finished;
+		std::ifstream file;
+		file.exceptions( std::ifstream::failbit | std::ifstream::badbit );
+
+		file.open(path.c_str());
+
+		bricks.clear();
+
+		//add bricks
+		point2f brickCount(10.0f, 10.0f);
+		point2f bricksPosition(5.0f, 2.5f);
+		point2f bricksSize = Brick::BRICK_SIZE * brickCount;
+
+		point2f firstBrickPosition = bricksPosition - bricksSize/2 + Brick::BRICK_SIZE/2;
+
+		for( float y = 0; y < brickCount.y; ++y )
+		{
+			for( float x = 0; x < brickCount.x; ++x )
+			{
+				std::string brickDescription;
+				Brick::BrickTexture texture;
+
+				file >> brickDescription;
+				if( brickDescription == "pink" )
+					texture = Brick::PINK;
+				else if( brickDescription == "brown" )
+					texture = Brick::BROWN;
+				else if( brickDescription == "blue" )
+					texture = Brick::BLUE;
+				else if( brickDescription == "dark_gray" )
+					texture = Brick::DARK_GRAY;
+				else if( brickDescription == "light_gray" )
+					texture = Brick::LIGHT_GRAY;
+				else if( brickDescription == "white" )
+					texture = Brick::WHITE;
+				else if( brickDescription == "orange" )
+					texture = Brick::ORANGE;
+				else if( brickDescription == "red" )
+					texture = Brick::RED;
+				else if( brickDescription == "yellow" )
+					texture = Brick::YELLOW;
+				else if( brickDescription == "empty" )
+					//texture = Brick::DEFAULT;
+					continue;
+				else
+					throw std::runtime_error( std::string("Arkanoid::loadBoard: Bad entry in the board file: ") + brickDescription );
+
+				const point2f position = firstBrickPosition + Brick::BRICK_SIZE*(const point2f(x, y));
+				//bricks.push_back( Brick( position, Brick::BRICK_SIZE, zeroPoint3f) );
+				bricks.push_back( Brick( position, texture ) );
+			}
+		}
+		file.close();
 	}
 }

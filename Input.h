@@ -1,6 +1,8 @@
 #ifndef Input_H
 #define Input_H
 
+#include "point2.h"
+
 struct Input
 {
 	enum Type{
@@ -14,7 +16,8 @@ struct Input
 		B,
 		X,
 		Y,
-		Character
+		Character,
+		MouseClick
 	} type;
 
 	struct Value{
@@ -24,6 +27,7 @@ struct Input
 		}buttonValue;
 		float rangeValue;
 		int charValue;
+		point2i pointerPosition;
 	}value;
 };
 

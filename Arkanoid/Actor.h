@@ -14,6 +14,7 @@ namespace Arkanoid{
 
 		virtual void draw() const = 0;
 		virtual const point2f& getPosition() const;
+		virtual void setPosition(const point2f& setPosition);
 
 		virtual void suicide();
 

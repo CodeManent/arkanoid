@@ -1,4 +1,6 @@
-#pragma once
+#ifndef InitialState_H
+#define InitialState_H
+
 #include "state.h"
 
 class InitialState :
@@ -15,3 +17,5 @@ public:
 	virtual bool isFinished();
 	virtual std::auto_ptr<State> getNextState();
 };
+
+#endif

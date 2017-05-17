@@ -1,5 +1,8 @@
 #include "Racket.h"
+#include "../ResourceManager.h"
 
+#include <cstdlib>
+#include <gl/glut.h>
 
 namespace Arkanoid{
 	const float Racket::acceleration = 0.02f;
@@ -95,5 +98,32 @@ namespace Arkanoid{
 	point2f Racket::getSpeed() const
 	{
 		return speed;
+	}
+
+	void Racket::draw() const
+	{
+		const point2f topleft = position - size/2;
+		const point2f bottomright = position + size/2;
+
+		resourceManager.bindTexture("Arkanoid\\arinoid_master.png");
+
+		glEnable(GL_TEXTURE_2D);
+		glColor3f(1.0f, 1.0f, 1.0f);
+
+		glBegin(GL_QUADS);
+			glTexCoord2i(262, 143);
+			glVertex2f(topleft.x, topleft.y);
+
+			glTexCoord2i(262, 153);
+			glVertex2f(topleft.x, bottomright.y);
+
+			glTexCoord2i(316, 153);
+			glVertex2f(bottomright.x, bottomright.y);
+
+			glTexCoord2i(316, 143);
+			glVertex2f(bottomright.x, topleft.y);
+		glEnd();
+
+		glDisable(GL_TEXTURE_2D);
 	}
 }

@@ -117,4 +117,9 @@ namespace Arkanoid{
 		}
 		return collisionDetected;
 	}
+
+	const float CircleActor::getRadious() const
+	{
+		return radious;
+	}
 }

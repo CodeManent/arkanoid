@@ -1,5 +1,8 @@
 #include "StateManager.h"
 #include "ConsoleState/ConsoleState.h"
+#include "ResourceManager.h"
+#include "Console.h"
+#include "ExitException.h"
 
 #include <memory>
 #include <vector>
@@ -12,8 +15,8 @@
 StateManager::StateManager(std::auto_ptr<State> state)
 	:visibleConsole(false)
 {
-	stateStack.push_back(state.get());
-	state.release();
+	pushState(state);
+
 }
 
 
@@ -50,26 +53,41 @@ bool StateManager::step()
 {
 	bool redraw = false;
 
-	//remove finished states
-	while(!stateStack.empty() && stateStack.back()->isFinished()){
-		//get next possible state
-		std::auto_ptr<State> substitute = stateStack.back()->getNextState();
+	// push states to the stack
+	for( unsigned int pos = 0; pos < stateStack.size(); ++pos )
+	{
+		std::auto_ptr<State> nextState = stateStack[pos]->getNextState();
+		if( nextState.get() )
+		{
+			redraw = true;
 
-		//remove top state from the stack
-		stateDeleter( stateStack.back());
-		stateStack.pop_back();
-		visibleConsole = false;
+			stateStack.insert(stateStack.begin()+pos+1, nextState.get() );
+			nextState.release();
+		}
+	}
 
-		//push the substitute state if there is one
-		if(substitute.get()){
-			pushState(substitute);
-			break;
+
+	//remove dead states
+	for( unsigned int pos = 0; pos < stateStack.size(); ++pos )
+	{
+		if( stateStack[pos]->isFinished() )
+		{
+			redraw = true;
+
+			//console is always at the top of the stack
+			if(visibleConsole && pos == stateStack.size() -1)
+			{
+				visibleConsole = false;
+			}
+			delete stateStack[pos];
+			stateStack.erase(stateStack.begin() + pos);
+			--pos;
 		}
 	}
 
 	//exit if no states left
 	if(stateStack.empty()){
-		exit(EXIT_SUCCESS);
+		throw ExitException();
 	}
 
 
@@ -81,8 +99,12 @@ bool StateManager::step()
 		}
 	}
 
-	//animate current state
+	//animate top state
 	 redraw |= stateStack.back()->step();
+
+
+	 //play the sounds
+	 resourceManager.updatePlayingSounds();
 
 	 return redraw;
 }
@@ -97,7 +119,7 @@ void StateManager::forwardInput(const Input &input)
 		if(input.type == Input::Character && input.value.buttonValue == Input::Value::ButtonDown)
 			if(input.value.charValue == '`' || input.value.charValue == '~')
 			{
-				pushState( std::auto_ptr<State>( new ConsoleState() ) );
+				pushState( std::auto_ptr<State>( new ConsoleState(*this) ) );
 				visibleConsole = true;
 				return;
 			}
@@ -111,8 +133,11 @@ void StateManager::forwardInput(const Input &input)
 
 void StateManager::pushState(std::auto_ptr<State> state)
 {
-	stateStack.push_back(state.get());
-	state.release();
+	if( state.get() != NULL)
+	{
+		stateStack.push_back(state.get());
+		state.release();
+	}
 }
 
 
@@ -125,9 +150,9 @@ void StateManager::exec(std::string command)
 	for(state = stateStack.rbegin(); state != stateStack.rend(); ++state)
 	{
 		if((*state)->exec(command))
-			break;
+			return;
 	}
-
+	console.write( std::string("Unrecognised command: ") + command );
 }
 
 

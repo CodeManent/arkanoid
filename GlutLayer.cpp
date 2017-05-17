@@ -23,13 +23,6 @@ void registerUI(UI &uiRef){
 
 
 void unregisterUI(){
-	glutReshapeFunc(NULL);
-	glutDisplayFunc(NULL);
-	glutKeyboardFunc(NULL);
-	glutKeyboardUpFunc(NULL);
-	glutSpecialFunc(NULL);
-	glutSpecialUpFunc(NULL);
-	glutIdleFunc(NULL);
 	ui = NULL;
 }
 
@@ -63,7 +56,7 @@ void keyboard(unsigned char key, int x, int y)
 				input.value.charValue =key;
 		}
 
-		ui->keyboard(input);
+		ui->input(input);
 	}
 }
 
@@ -87,7 +80,7 @@ void keyboardUp(unsigned char key, int x, int y)
 				input.value.charValue =key;
 		}
 
-		ui->keyboard(input);
+		ui->input(input);
 	}
 }
 
@@ -109,7 +102,7 @@ void special(int key, int x, int y)
 			case GLUT_KEY_RIGHT:input.type = Input::Right;	break;
 				//todo: add more input`
 		}
-		ui->keyboard(input);
+		ui->input(input);
 	}
 }
 
@@ -131,12 +124,37 @@ void specialUp(int key, int x, int y)
 			case GLUT_KEY_RIGHT:input.type = Input::Right;	break;
 				//todo: add more input
 		}
-		ui->keyboard(input);
+		ui->input(input);
 	}
 }
 
 
 //---------------------------------------------------------
+
+
+
+void mouse( int button, int state, int x, int y)
+{
+	if(ui){
+		Input input;
+
+		input.type = Input::MouseClick;
+		input.value.pointerPosition = point2i( x, y );
+		if( state == GLUT_DOWN )
+			input.value.buttonValue = Input::Value::ButtonDown;
+		else
+			input.value.buttonValue = Input::Value::ButtonUp;
+
+		input.value.rangeValue = button;
+
+		ui->input(input);
+	}
+}
+
+
+
+//---------------------------------------------------------
+
 
 
 void reshape(int width, int height)

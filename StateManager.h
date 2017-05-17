@@ -1,4 +1,6 @@
-#pragma once
+#ifndef StateManager_H
+#define StateManager_H
+
 #include "State.h"
 #include "Input.h"
 
@@ -23,3 +25,5 @@ protected:
 	std::vector<State *> stateStack;
 	bool visibleConsole;
 };
+
+#endif

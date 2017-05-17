@@ -14,6 +14,7 @@ namespace Arkanoid{
 		virtual void move(const Input &input);
 		virtual void step();
 		virtual point2f getSpeed() const;
+		virtual void draw() const;
 
 	protected:
 		float speed;

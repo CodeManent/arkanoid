@@ -13,6 +13,7 @@ namespace Arkanoid{
 		virtual void draw() const;
 
 		virtual bool boxCollision(const point2f &boxPosition, const point2f &boxSize) const;
+		virtual const float getRadious() const;
 
 
 	protected:

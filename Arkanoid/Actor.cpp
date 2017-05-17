@@ -26,4 +26,9 @@ namespace Arkanoid{
 	{
 		return position;
 	}
+
+	void Actor::setPosition(const point2f& newPosition)
+	{
+		position = newPosition;
+	}
 }

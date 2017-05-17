@@ -19,12 +19,8 @@ Console& Console::get()
 
 Console::Console(void)
 :visible(false),
-maxBufferSize(100)
+maxBufferSize(50)
 {
-	/*
-	for(int i=0; i < 100; ++i)
-		buffer.push_back("Initial bufer Message");
-	//*/
 }
 
 Console::~Console(void)
@@ -71,7 +67,6 @@ void Console::draw()
 	if(visible)
 	{
 		glEnable(GL_BLEND);
-		glDepthMask(GL_FALSE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // GL_ONE);
 
 		glPushMatrix();

@@ -2,7 +2,11 @@
 #include <cstdlib>
 #include <gl/glut.h>
 
-#include "Arkanoid/Arkanoid.h"
+//#include "Arkanoid/LevelEditor.h"
+#include "Arkanoid/MainMenu.h"
+//#include "Arkanoid/Arkanoid.h"
+#include "Arkanoid/WinState.h"
+//#include "Feel/Feel.h"
 
 InitialState::InitialState(void)
 	:State()
@@ -82,6 +86,15 @@ bool InitialState::isFinished()
 
 std::auto_ptr<State> InitialState::getNextState()
 {
-	//return std::auto_ptr<State>(NULL);
-	return std::auto_ptr<State>(new Arkanoid::Arkanoid());
+	State *nextState = NULL;
+
+	nextState = new 
+		Arkanoid::MainMenu()
+//		Arkanoid::Arkanoid("first")
+//		Arkanoid::LevelEditor()
+//		Arkanoid::WinState()
+//		Feel()
+		;
+
+	return std::auto_ptr<State>(nextState);
 }

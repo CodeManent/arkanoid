@@ -1,4 +1,6 @@
-#pragma once
+#ifndef Console_H
+#define Console_H
+
 #include <vector>
 #include <list>
 
@@ -22,3 +24,5 @@ private:
 };
 
 extern Console &console;
+
+#endif

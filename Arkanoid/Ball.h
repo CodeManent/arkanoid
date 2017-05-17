@@ -74,7 +74,7 @@ namespace Arkanoid{
 		Ball(const point2f &position, const float &radious, const point3f &color = onePoint3f);
 		virtual ~Ball();
 
-		virtual void step(std::vector<const point2f> &points, std::vector<Brick*> &bricks, const Racket &racket);
+		virtual void step(std::vector<Brick> &bricks, const Racket &racket);
 		void reactToCollision(const collisionData &cdata);
 		void reactToPointCollision2(const collisionData &cdata);
 		void reactToPointCollision(const collisionData &cdata);
@@ -88,6 +88,8 @@ namespace Arkanoid{
 		collisionData sphereBoxSweepTest(const point2f &projectedPosition, const point2f &upleft, const point2f &downright) const;
 		collisionData sphereMovingBoxSweepTest(const point2f &projectedPosition, const point2f& boxSpeed, const point2f &upleft, const point2f &downright) const;
 		int getVectorSection(const point2f &testVector) const;
+
+		virtual void setSpeedDirection(const point2f& direction);
 
 	protected:
 		point2f speed;

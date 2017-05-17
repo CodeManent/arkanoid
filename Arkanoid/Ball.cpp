@@ -1,28 +1,28 @@
 #include "Ball.h"
+#include "../ResourceManager.h"
+
 #include <cstdlib>
 #include <gl/glut.h>
 #include <iostream>
 
-#include "RectangleActor.h"
-#include <cmath>
-
 
 namespace Arkanoid{
 
-	const float Ball::maxSpeed = 0.09;
+	const float Ball::maxSpeed = 0.12;
 	//point3f ballColor(0.37f, 0.89f, 0.75f)
 
 	Ball::Ball(const point2f &position, const float &radious, const point3f &color)
-		:CircleActor(position, radious, color),
-		speed(point2f(0.7f, -1.0f).normalise()*maxSpeed)
+		:CircleActor(position, radious, color)
+		//speed(point2f(0.7f, -1.0f).normalise()*maxSpeed)
 	{
+		setSpeedDirection(point2f(0.7f, -1.0f));
 	}
 
 	Ball::~Ball()
 	{
 	}
 
-	void Ball::step(std::vector<const point2f> &points, std::vector<Brick*> &bricks, const Racket &racket)
+	void Ball::step(std::vector<Brick> &bricks, const Racket &racket)
 	{
 		float timeFrame = 1.0f;
 		bool racketCollision = false;
@@ -39,10 +39,10 @@ namespace Arkanoid{
 				{zeroPoint2f, point2f(1.0f, 0.0f)}, //left
 				{zeroPoint2f, point2f(0.0f, 1.0f)}, //top
 				{onePoint2f*10.0f, point2f(-1.0f, 0.0f)}, //right
-				{onePoint2f*10.0f, point2f(0.0f, -1.0f)}  //bottom
+				//{onePoint2f*10.0f, point2f(0.0f, -1.0f)}  //bottom
 			};
 
-			for(unsigned int i = 0; i < 4; ++i){
+			for(unsigned int i = 0; i < sizeof(borders)/sizeof(borders[0]); ++i){
 				const collisionData cdata = spherePlaneSweepTest(projectedPosition, borders[i].point, borders[i].normal);
 				if(cdata.collided)
 				{
@@ -53,28 +53,13 @@ namespace Arkanoid{
 				}
 			}
 
-			std::vector<const point2f>::const_iterator firstPoint = points.end();
-			std::vector<const point2f>::const_iterator point;
-			for(point = points.begin(); point != points.end(); ++point)
-			{
-				const collisionData cdata = spherePointSweepTest(projectedPosition, *point);
-				if(cdata.collided)
-				{
-					if((firstCollision.collided && cdata.collisionTime < firstCollision.collisionTime) || (!firstCollision.collided))
-					{
-						firstCollision = cdata;
-						firstPoint = point;
-					}
-				}
-			}
-
 			//bricks collisions
-			std::vector<Brick*>::const_iterator firstBrick = bricks.end();
-			std::vector<Brick*>::const_iterator brick;
+			std::vector<Brick>::const_iterator firstBrick = bricks.end();
+			std::vector<Brick>::const_iterator brick;
 			for(brick = bricks.begin(); brick != bricks.end(); ++brick)
 			{
-				const point2f upleft = (*brick)->getPosition() - (*brick)->getSize()/2;
-				const point2f downright = (*brick)->getPosition() + (*brick)->getSize()/2;
+				const point2f upleft = (brick)->getPosition() - (brick)->getSize()/2;
+				const point2f downright = (brick)->getPosition() + (brick)->getSize()/2;
 
 				const collisionData cdata = sphereBoxSweepTest(projectedPosition, upleft, downright);
 				if(cdata.collided)
@@ -82,10 +67,8 @@ namespace Arkanoid{
 					if((firstCollision.collided && cdata.collisionTime < firstCollision.collisionTime) || (!firstCollision.collided))
 					{
 						firstCollision = cdata;
-						firstPoint = point;
 
 						firstBrick = brick;
-						firstPoint = points.end();
 					}
 				}
 			}
@@ -108,7 +91,6 @@ namespace Arkanoid{
 							firstCollision = cdata;
 
 							firstBrick = bricks.end();
-							firstPoint = points.end();
 						}
 					}
 				}
@@ -120,6 +102,7 @@ namespace Arkanoid{
 			{
 				if(racketCollision)
 				{
+					resourceManager.playSound( "Arkanoid\\ogg\\Ark_release.ogg" );
 					reactToRacketCollision(firstCollision, racket);
 				}
 				else
@@ -130,13 +113,11 @@ namespace Arkanoid{
 				position = firstCollision.collisionPosition;
 				timeFrame -= firstCollision.collisionTime*timeFrame;
 
-				if( firstPoint != points.end() )
+				if( firstBrick != bricks.end() )
 				{
-					points.erase(firstPoint);
-				}
-				else if( firstBrick != bricks.end() )
-				{
-					(*firstBrick)->suicide();
+					resourceManager.playSound( "Arkanoid\\ogg\\Ark_Bounce_2.ogg" );
+
+					//(*firstBrick)->suicide();
 					bricks.erase(firstBrick);
 				}
 			}
@@ -150,7 +131,8 @@ namespace Arkanoid{
 
 		//hard limits
 		position.x = ( position.x < 0 ) ? radious*2 : ( ( position.x > 10.0f ) ? 10.0f-radious*2 : position.x );
-		position.y = ( position.y < 0 ) ? radious*2 : ( ( position.y > 10.0f ) ? 10.0f-radious*2 : position.y );
+		//position.y = ( position.y < 0 ) ? radious*2 : ( ( position.y > 10.0f ) ? 10.0f-radious*2 : position.y );
+		position.y = ( position.y < 0 ) ? radious*2 : position.y ;
 
 		//fix speed vector lrngth (because of floating point errors)
 		speed = speed.normal()*maxSpeed;
@@ -476,5 +458,10 @@ namespace Arkanoid{
 		{
 			throw( std::runtime_error( "getBoxSection: bad section computation" ) );
 		}
+	}
+
+	void Ball::setSpeedDirection(const point2f& direction)
+	{
+		speed = direction.normal()*maxSpeed;
 	}
 }
